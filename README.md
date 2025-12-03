@@ -1,0 +1,1 @@
+# Hungarian Namedays Calendar generator
