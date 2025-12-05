@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -15,9 +14,9 @@ const (
 	ENDYEAR   = 2060
 )
 
-type Root map[string]Month
+type Root map[int]Month
 
-type Month map[string]Day
+type Month map[int]Day
 
 type Day struct {
 	Names []string `json:"names"`
@@ -59,12 +58,10 @@ func main() {
 	writer.WriteHeader()
 
 	for m := 1; m <= 12; m++ {
-		idx := strconv.Itoa(m)
-		month := root[idx]
+		month := root[m]
 
 		for d := 1; d <= 31; d++ {
-			idx := strconv.Itoa(d)
-			day, ok := month[idx]
+			day, ok := month[d]
 
 			if !ok {
 				continue
@@ -82,14 +79,13 @@ func main() {
 				if d == 24 {
 					summary = "Szökőnap"
 				} else if d != 28 {
-					nextIdx := strconv.Itoa(d - 1)
-					nextDay, ok := month[nextIdx]
+					prevDay, ok := month[d-1]
 
 					if !ok {
 						continue
 					}
 
-					summary = strings.Join(nextDay.Names, ", ")
+					summary = strings.Join(prevDay.Names, ", ")
 				}
 
 				rrule = fmt.Sprintf("FREQ=YEARLY;INTERVAL=4;BYMONTH=%d;BYMONTHDAY=%d", m, d)
