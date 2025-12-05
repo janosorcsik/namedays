@@ -15,7 +15,9 @@ const (
 	ENDYEAR   = 2060
 )
 
-type Root map[string]map[string]Day
+type Root map[string]Month
+
+type Month map[string]Day
 
 type Day struct {
 	Names []string `json:"names"`
