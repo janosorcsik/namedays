@@ -18,9 +18,7 @@ type Root map[int]Month
 
 type Month map[int]Day
 
-type Day struct {
-	Names []string `json:"names"`
-}
+type Day []string
 
 func main() {
 	jsonFile, err := os.Open(INPUT)
@@ -67,7 +65,7 @@ func main() {
 				continue
 			}
 
-			summary := strings.Join(day.Names, ", ")
+			summary := strings.Join(day, ", ")
 
 			if m == 2 && d >= 24 {
 				leapDays := calculator.GetLeapDays(m, d)
@@ -85,7 +83,7 @@ func main() {
 						continue
 					}
 
-					summary = strings.Join(prevDay.Names, ", ")
+					summary = strings.Join(prevDay, ", ")
 				}
 
 				rrule = fmt.Sprintf("FREQ=YEARLY;INTERVAL=4;BYMONTH=%d;BYMONTHDAY=%d", m, d)
