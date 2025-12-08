@@ -23,8 +23,8 @@ type Day []string
 func main() {
 	jsonFile, err := os.Open(inputFile)
 	if err != nil {
-		fmt.Println("Error opening file:", err)
-		return
+		fmt.Fprintf(os.Stderr, "error opening file: %v", err)
+		os.Exit(1)
 	}
 
 	defer jsonFile.Close()
@@ -32,14 +32,14 @@ func main() {
 	var root Root
 	err = json.NewDecoder(jsonFile).Decode(&root)
 	if err != nil {
-		fmt.Println("Error parsing file:", err)
-		return
+		fmt.Fprintf(os.Stderr, "error parsing file: %v", err)
+		os.Exit(1)
 	}
 
 	calendar, err := os.Create(outputFile)
 	if err != nil {
-		fmt.Println("Error creating file:", err)
-		return
+		fmt.Fprintf(os.Stderr, "error creating file: %v", err)
+		os.Exit(1)
 	}
 
 	defer calendar.Close()
@@ -48,8 +48,8 @@ func main() {
 	firstLeapYear, err := calculator.GetFirstLeapYear()
 
 	if err != nil {
-		fmt.Println("Error getting first leap year:", err)
-		return
+		fmt.Fprintf(os.Stderr, "error getting first leap year: %v", err)
+		os.Exit(1)
 	}
 
 	writer := NewCalendarWriter(calendar)

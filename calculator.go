@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type LeapYearCalculator struct {
 	leapYears []int
@@ -36,7 +39,7 @@ func (l *LeapYearCalculator) GetLeapDays(month int, day int) []string {
 
 func (l *LeapYearCalculator) GetFirstLeapYear() (int, error) {
 	if len(l.leapYears) == 0 {
-		return -1, fmt.Errorf("No leap years found")
+		return 0, errors.New("no leap years found")
 	}
 
 	return l.leapYears[0], nil
