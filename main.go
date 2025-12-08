@@ -76,7 +76,20 @@ func main() {
 				excludedDates := strings.Join(leapDays, ",")
 
 				rrule := fmt.Sprintf("FREQ=YEARLY;BYMONTH=%d;BYMONTHDAY=%d", m, d)
-				writer.WriteEvent(startYear, m, d, false, summary, "Hungarian name day (non-leap years)", rrule, excludedDates)
+				description := "Hungarian name day (non-leap years)"
+
+				event := CalendarEvent{
+					Year:          startYear,
+					Month:         m,
+					Day:           d,
+					IsLeapYear:    false,
+					Summary:       summary,
+					Description:   description,
+					Rule:          &rrule,
+					ExcludedDates: &excludedDates,
+				}
+
+				writer.WriteEvent(event)
 
 				if d == leapDay {
 					summary = "Szökőnap"
@@ -91,14 +104,49 @@ func main() {
 				}
 
 				rrule = fmt.Sprintf("FREQ=YEARLY;INTERVAL=4;BYMONTH=%d;BYMONTHDAY=%d", m, d)
-				writer.WriteEvent(firstLeapYear, m, d, true, summary, "Hungarian name day (leap years)", rrule, "")
+				description = "Hungarian name day (leap years)"
+				event = CalendarEvent{
+					Year:          firstLeapYear,
+					Month:         m,
+					Day:           d,
+					IsLeapYear:    true,
+					Summary:       summary,
+					Description:   description,
+					Rule:          &rrule,
+					ExcludedDates: nil,
+				}
+
+				writer.WriteEvent(event)
 
 				if d == lastDayInLeapMonth {
 					rrule = fmt.Sprintf("FREQ=YEARLY;INTERVAL=4;BYMONTH=%d;BYMONTHDAY=%d", m, d+1)
-					writer.WriteEvent(firstLeapYear, m, d+1, true, summary, "Hungarian name day (leap years)", rrule, "")
+					event := CalendarEvent{
+						Year:          firstLeapYear,
+						Month:         m,
+						Day:           d + 1,
+						IsLeapYear:    true,
+						Summary:       summary,
+						Description:   description,
+						Rule:          &rrule,
+						ExcludedDates: nil,
+					}
+
+					writer.WriteEvent(event)
 				}
 			} else {
-				writer.WriteEvent(startYear, m, d, false, summary, "Hungarian name day", "FREQ=YEARLY", "")
+				rrule := "FREQ=YEARLY"
+				event := CalendarEvent{
+					Year:          startYear,
+					Month:         m,
+					Day:           d,
+					IsLeapYear:    false,
+					Summary:       summary,
+					Description:   "Hungarian name day",
+					Rule:          &rrule,
+					ExcludedDates: nil,
+				}
+
+				writer.WriteEvent(event)
 			}
 		}
 	}
