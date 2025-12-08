@@ -8,10 +8,15 @@ import (
 )
 
 const (
-	inputFile  = "namedays.json"
-	outputFile = "namedays.ics"
-	startYear  = 2025
-	endYear    = 2060
+	inputFile          = "namedays.json"
+	outputFile         = "namedays.ics"
+	startYear          = 2025
+	endYear            = 2060
+	leapMonth          = 2
+	leapDay            = 24
+	lastDayInLeapMonth = 28
+	monthsInYear       = 12
+	daysInMonth        = 31
 )
 
 type Root map[int]Month
@@ -46,7 +51,6 @@ func main() {
 
 	calculator := NewLeapYearCalculator(startYear, endYear)
 	firstLeapYear, err := calculator.GetFirstLeapYear()
-
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error getting first leap year: %v", err)
 		os.Exit(1)
@@ -55,10 +59,10 @@ func main() {
 	writer := NewCalendarWriter(calendar)
 	writer.WriteHeader()
 
-	for m := 1; m <= 12; m++ {
+	for m := 1; m <= monthsInYear; m++ {
 		month := root[m]
 
-		for d := 1; d <= 31; d++ {
+		for d := 1; d <= daysInMonth; d++ {
 			day, ok := month[d]
 
 			if !ok {
@@ -67,16 +71,16 @@ func main() {
 
 			summary := strings.Join(day, ", ")
 
-			if m == 2 && d >= 24 {
+			if m == leapMonth && d >= leapDay {
 				leapDays := calculator.GetLeapDays(m, d)
 				excludedDates := strings.Join(leapDays, ",")
 
 				rrule := fmt.Sprintf("FREQ=YEARLY;BYMONTH=%d;BYMONTHDAY=%d", m, d)
 				writer.WriteEvent(startYear, m, d, false, summary, "Hungarian name day (non-leap years)", rrule, excludedDates)
 
-				if d == 24 {
+				if d == leapDay {
 					summary = "Szökőnap"
-				} else if d != 28 {
+				} else if d != lastDayInLeapMonth {
 					prevDay, ok := month[d-1]
 
 					if !ok {
@@ -89,7 +93,7 @@ func main() {
 				rrule = fmt.Sprintf("FREQ=YEARLY;INTERVAL=4;BYMONTH=%d;BYMONTHDAY=%d", m, d)
 				writer.WriteEvent(firstLeapYear, m, d, true, summary, "Hungarian name day (leap years)", rrule, "")
 
-				if d == 28 {
+				if d == lastDayInLeapMonth {
 					rrule = fmt.Sprintf("FREQ=YEARLY;INTERVAL=4;BYMONTH=%d;BYMONTHDAY=%d", m, d+1)
 					writer.WriteEvent(firstLeapYear, m, d+1, true, summary, "Hungarian name day (leap years)", rrule, "")
 				}
