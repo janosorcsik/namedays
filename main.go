@@ -8,10 +8,10 @@ import (
 )
 
 const (
-	INPUT     = "namedays.json"
-	OUTPUT    = "namedays.ics"
-	STARTYEAR = 2025
-	ENDYEAR   = 2060
+	inputFile  = "namedays.json"
+	outputFile = "namedays.ics"
+	startYear  = 2025
+	endYear    = 2060
 )
 
 type Root map[int]Month
@@ -21,7 +21,7 @@ type Month map[int]Day
 type Day []string
 
 func main() {
-	jsonFile, err := os.Open(INPUT)
+	jsonFile, err := os.Open(inputFile)
 	if err != nil {
 		fmt.Println("Error opening file:", err)
 		return
@@ -36,7 +36,7 @@ func main() {
 		return
 	}
 
-	calendar, err := os.Create(OUTPUT)
+	calendar, err := os.Create(outputFile)
 	if err != nil {
 		fmt.Println("Error creating file:", err)
 		return
@@ -44,7 +44,7 @@ func main() {
 
 	defer calendar.Close()
 
-	calculator := NewLeapYearCalculator(STARTYEAR, ENDYEAR)
+	calculator := NewLeapYearCalculator(startYear, endYear)
 	firstLeapYear, err := calculator.GetFirstLeapYear()
 
 	if err != nil {
@@ -72,7 +72,7 @@ func main() {
 				excludedDates := strings.Join(leapDays, ",")
 
 				rrule := fmt.Sprintf("FREQ=YEARLY;BYMONTH=%d;BYMONTHDAY=%d", m, d)
-				writer.WriteEvent(STARTYEAR, m, d, false, summary, "Hungarian name day (non-leap years)", rrule, excludedDates)
+				writer.WriteEvent(startYear, m, d, false, summary, "Hungarian name day (non-leap years)", rrule, excludedDates)
 
 				if d == 24 {
 					summary = "Szökőnap"
@@ -94,7 +94,7 @@ func main() {
 					writer.WriteEvent(firstLeapYear, m, d+1, true, summary, "Hungarian name day (leap years)", rrule, "")
 				}
 			} else {
-				writer.WriteEvent(STARTYEAR, m, d, false, summary, "Hungarian name day", "FREQ=YEARLY", "")
+				writer.WriteEvent(startYear, m, d, false, summary, "Hungarian name day", "FREQ=YEARLY", "")
 			}
 		}
 	}
